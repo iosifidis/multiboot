@@ -6,7 +6,7 @@ There are plenty of tools to create a multiboot USB.
 * [Multiboot] (http://liveusb.info/): It works well on Debian and Debian based distros. You can add a windows ISO.
 * [YUMI] (http://www.pendrivelinux.com/yumi-multiboot-usb-creator/): It works on Windows.
 
-![ownCloud-install](/pictures/opensuse_usb.jpg =200x50)
+![openSUSE USB](/pictures/opensuse_usb.jpg)
 
 The best way to create a multiboot USB is by terminal. Everytime there is new version of the distro, all you have to do is to change the ISO file using copy>paste and change the name in the grub.cfg file.
 This tutorial is based on [Arch wiki] (https://wiki.archlinux.org/index.php/Multiboot_USB_drive).
@@ -83,9 +83,14 @@ For Debian/Ubuntu
 $ sudo nano /media/USERNAME/MULTIBOOT/boot/grub/grub.cfg
 ```
 
-For Arch Linux/openSUSE
+For Arch Linux
 ```
 $ sudo nano /run/media/USERNAME/MULTIBOOT/boot/grub/grub.cfg
+```
+
+For openSUSE
+```
+$ sudo nano /run/media/USERNAME/MULTIBOOT/boot/grub2/grub.cfg
 ```
 
 Where USERNAME is the username you have to enter your system.
@@ -129,18 +134,17 @@ initrd (loop)/boot/x86_64/loader/initrd
 }
 ```
 
-If you want more, you can check the [Arch Wiki] (https://wiki.archlinux.org/index.php/Multiboot_USB_drive).
+If you want more, you can check the [Arch Wiki] (https://wiki.archlinux.org/index.php/Multiboot_USB_drive) or use my grub.cfg example. Just put # for the menuentries you don't need.
 
-I will mention 2 examples here that need attention.
+I will describe 2 examples here that need attention.
 
-1. Debian: I downloaded **firmware-8.6.0-amd64-i386-netinst.iso** and put it in the iso folder.
+1. Debian: Download **firmware-8.6.0-amd64-i386-netinst.iso** and put it in the iso folder.
 
-I had to download
-[initrd.gz] (https://mirrors.kernel.org/debian/dists/stable/main/installer-amd64/current/images/hd-media/initrd.gz) for 64bit
-[initrd.gz] (https://mirrors.kernel.org/debian/dists/stable/main/installer-i386/current/images/hd-media/initrd.gz) for 32bit
+I had to download [initrd.gz for 64bit] (https://mirrors.kernel.org/debian/dists/stable/main/installer-amd64/current/images/hd-media/initrd.gz) and 
+[initrd.gz for 32bit] (https://mirrors.kernel.org/debian/dists/stable/main/installer-i386/current/images/hd-media/initrd.gz)
 
-Rename them accordingly.
-As menuentry I used
+Rename them accordingly and copy them to **iso** folder.<br>
+As menuentry I used for 64bit
 ```
 menuentry "Debian 8.6 64bit" {
 	set isofile='/iso/firmware-8.6.0-amd64-i386-netinst.iso'
@@ -151,9 +155,20 @@ menuentry "Debian 8.6 64bit" {
 }
 ```
 
+and
+```
+menuentry "Debian 8.6 32bit" {
+	set isofile='/iso/firmware-8.6.0-amd64-i386-netinst.iso'
+	set initrdfile='/iso/firmware-8.6.0-i386-netinst.initrd.gz'
+	loopback loop $isofile
+	linux (loop)/install.386/vmlinuz iso-scan/ask_second_pass=true iso-scan/filename=$isofile vga=788 -- quiet
+	initrd $initrdfile
+}
+```
+
 I pointed where the **initrd.gz** file is.
 
-2. [Hirens Boot CD] (http://www.hirensbootcd.org/): This is complicated.
+ [Hirens Boot CD] (http://www.hirensbootcd.org/): This is complicated.
 
 - Download the cd
 ```
@@ -196,6 +211,10 @@ menuentry "HIRENS TOOLS" {
 linux16 /grub.exe —config-file="find —set-root /HBCD/menu.lst; configfile /HBCD/menu.lst" 
 } 
 ```
+
+More info
+* [Arch wiki](https://wiki.archlinux.org/index.php/Multiboot_USB_drive)
+
 
 Here are the tutorials in Greek:
 * [Δημιουργία multi liveUSB με openSUSE] (http://eiosifidis.blogspot.gr/2015/05/script-multi-liveusb-opensuse.html)
